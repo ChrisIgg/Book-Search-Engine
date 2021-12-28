@@ -1,4 +1,5 @@
 const express = require("express");
+const { ApolloServer } = require("apollo-server-express");
 const path = require("path");
 const db = require("./config/connection");
 const routes = require("./routes");
@@ -6,13 +7,21 @@ const routes = require("./routes");
 // const mongoose = require('mongoose');
 const compression = require("compression");
 
+const { typeDefs, resolvers } = require("./schemas");
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
+
+server.applyMiddleware({ app });
 
 app.use(compression());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // mongoose.connect(
 //   process.env.MONGODB_URI || "mongodb://localhost/book-search-db",
