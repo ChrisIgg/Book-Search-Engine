@@ -10,10 +10,20 @@ const typeDefs = gql`
         link: String
         title: String!
     },
-    type USER {
+    type User {
         _id: ID:
         username: String! @unique
         email: String! @unique
         password: String!
-        savedBooks: [Book]0        
-    }`;
+        savedBooks: [Book]      
+    }
+    type Auth {
+        token: ID!
+        user: User
+    }
+    type Query {
+        users: [User]
+        user(username: String!): User
+        saveBook: Book
+    }
+    `;
