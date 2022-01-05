@@ -11,7 +11,7 @@ const resolvers = {
           "-password"
         );
       }
-      throw new AuthenticationError("You're logged in");
+      throw new AuthenticationError("You're notlogged in");
     },
   },
   Mutation: {
@@ -32,7 +32,28 @@ const resolvers = {
       const token = signToken(user);
       return { user, token };
     },
-    saveBook: async(parent, { bookData }, context),
+    deleteBook: async (parent, { bookData }, context) => {
+      if (context.user) {
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $pull: { savedBooks: { bookId } } },
+          { new: true, runValidators: true }
+        );
+        return { updatedUser };
+      }
+      throw new AuthenticationError("Not Logged In");
+    },
+    saveBook: async (parent, { bookData }, context) => {
+      if (context.user) {
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $addToSet: { savedBooks: bookData } },
+          { new: true, runValidators: true }
+        );
+        return updatedUser;
+      }
+      throw new AuthenticationError("Not Logged In");
+    },
   },
 };
 
